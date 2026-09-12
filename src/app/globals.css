@@ -1,0 +1,121 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---- neutral workspace palette (white / zinc / lilac accent) ---- */
+@theme {
+  --color-bg: #f7f7f8;
+  --color-panel: #ffffff;
+  --color-panel2: #f4f4f5;
+  --color-line: #e4e4e7;
+  --color-ink: #18181b;
+  --color-soft: #71717a;
+  --color-violet: #7c3aed;
+  --color-lilac: #f1e7fb;
+  --color-lilac-line: #ddccf2;
+  --color-pass: #0f766e;
+  --color-warn: #b45309;
+  --color-fail: #dc2626;
+  --color-info: #2563eb;
+  /* next/font injects the two families as CSS variables on <html> */
+  --font-display: var(--font-inter), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* ---- shadcn token wiring (Tailwind v4) ---- */
+@theme inline {
+  --font-heading: var(--font-display);
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* single committed light theme: neutral ground, white boxed panels, black primary */
+:root {
+  --background: #f7f7f8;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  --primary: #18181b;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f1e7fb;
+  --accent-foreground: #5b21b6;
+  --destructive: #dc2626;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #7c3aed;
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/40;
+  }
+  html {
+    @apply font-sans;
+    background: var(--color-bg);
+  }
+  body {
+    @apply text-foreground;
+    margin: 0;
+    background: var(--color-bg);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ---- type scale ----------------------------------------------------------------
+   Every size in app code comes from this scale:
+     text-2xl      24px  page title (one)
+     text-[15px]         section & card titles
+     text-[13.5px]       primary: rows, body, inputs, descriptions
+     text-[12px]         secondary: sub-lines, metadata
+     text-[11px]         micro: chips, uppercase labels, mono metadata
+   Vendored code (components/ui) keeps its own sizes.
+--------------------------------------------------------------------------------- */
+
+.h-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* the ad unit preview: a small white card the way a checkout page would show it */
+.ad-unit {
+  background: #ffffff;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px #00000008, 0 8px 24px #00000006;
+}

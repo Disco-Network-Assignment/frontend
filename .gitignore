@@ -1,0 +1,17 @@
+node_modules/
+dist/
+
+# next
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# local env (.env.development is committed on purpose: no secrets)
+.env
+.env.local
+.env.*.local
+
+# next.js auto-generated agent guidance (local tooling)
+AGENTS.md
+CLAUDE.md
