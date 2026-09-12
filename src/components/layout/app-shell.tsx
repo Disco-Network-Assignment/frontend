@@ -4,7 +4,7 @@ import { Asterisk, FolderGit2 } from "lucide-react";
 import { useHealth } from "@/features/campaign/hooks/use-examples";
 import { cn } from "@/lib/utils";
 
-export const REPOS_URL = "https://github.com/Disco-Assignment";
+export const REPOS_URL = "https://github.com/AbhisekOmkar/disco-backend";
 
 /**
  * The persistent app frame: neutral canvas, a slim header (brand, backend mode, repos), and
