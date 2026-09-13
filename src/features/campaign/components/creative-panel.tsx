@@ -56,7 +56,7 @@ function CreativeCard({ creative: c }: { creative: CreativeVariant }) {
         <span className="text-[13.5px] font-semibold">{c.persona_name}</span>
         <Badge variant="outline" className={c.lint.passed ? "text-pass" : "text-fail"}>
           {c.lint.passed ? "lint ok" : "needs edit"}
-          {c.lint.retried ? " · retried" : ""}
+          {c.lint.self_checks > 0 ? ` · self-checked ×${c.lint.self_checks}` : ""}
         </Badge>
         <Button variant="ghost" size="icon-xs" className="ml-auto" onClick={copy} aria-label="Copy creative">
           {copied ? <Check className="size-3" /> : <Copy className="size-3" />}

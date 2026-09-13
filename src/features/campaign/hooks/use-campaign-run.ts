@@ -15,6 +15,9 @@ export function useCampaignRun(): {
 } {
   const [state, dispatch] = useReducer(runReducer, initialRunState);
   const controller = useRef<AbortController | null>(null);
+  // one conversation per page load: the backend's session memory lets a refined description
+  // build on the earlier turns instead of starting over
+  const sessionId = useRef(crypto.randomUUID());
 
   const cancel = useCallback(() => {
     controller.current?.abort();
@@ -28,7 +31,7 @@ export function useCampaignRun(): {
     controller.current = current;
     dispatch({ type: "start", description });
     campaignApi
-      .stream(description, options, (event) => {
+      .stream(description, { ...options, session_id: sessionId.current }, (event) => {
         if (!current.signal.aborted) dispatch({ type: "event", event });
       }, current.signal)
       .catch((error: unknown) => {

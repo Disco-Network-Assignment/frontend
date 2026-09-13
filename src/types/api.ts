@@ -85,7 +85,7 @@ export type RejectedPersona = { persona_id: string; persona_name: string; why_no
 export type PersonaSelection = { selected: PersonaPick[]; rejected: RejectedPersona[] };
 
 export type LintIssue = { severity: LintSeverity; rule: string; message: string };
-export type LintReport = { passed: boolean; issues: LintIssue[]; retried: boolean };
+export type LintReport = { passed: boolean; issues: LintIssue[]; self_checks: number };
 
 export type CreativeVariant = {
   id: string;
@@ -145,11 +145,14 @@ export type StageMeta = {
   stage: StageKey;
   ms: number;
   mode: ExecutionMode;
+  agent: string | null;
   model: string | null;
   reasoning_effort: string | null;
   prompt_version: string | null;
   input_tokens: number | null;
   output_tokens: number | null;
+  tool_calls: number;
+  handoffs: number;
   retried: boolean;
 };
 
@@ -170,7 +173,6 @@ export type StopResult = {
   run_id: string;
   description: string;
   mode: ExecutionMode;
-  brief: AdvertiserBrief;
   reason: string;
   clarifying_questions: string[];
   examples: string[];
@@ -179,7 +181,7 @@ export type StopResult = {
 
 // ---- API ----
 
-export type PlanOptions = { force_exploratory?: boolean; mode?: ExecutionMode };
+export type PlanOptions = { force_exploratory?: boolean; mode?: ExecutionMode; session_id?: string };
 
 /** One NDJSON line from POST /api/plan. `data` is the stage output on `completed`. */
 export type PipelineEvent = {

@@ -21,11 +21,12 @@ export function TraceDrawer({ plan }: { plan: CampaignPlan }) {
             <thead className="text-left text-[11px] tracking-wide text-soft uppercase">
               <tr>
                 <th className="py-1 pr-3 font-medium">Stage</th>
+                <th className="py-1 pr-3 font-medium">Agent</th>
                 <th className="py-1 pr-3 font-medium">ms</th>
-                <th className="py-1 pr-3 font-medium">Mode</th>
                 <th className="py-1 pr-3 font-medium">Model · effort</th>
                 <th className="py-1 pr-3 font-medium">Prompt</th>
                 <th className="py-1 pr-3 font-medium">Tokens</th>
+                <th className="py-1 pr-3 font-medium">Tools · handoffs</th>
                 <th className="py-1 pr-3 font-medium">Flags</th>
               </tr>
             </thead>
@@ -33,11 +34,12 @@ export function TraceDrawer({ plan }: { plan: CampaignPlan }) {
               {plan.trace.map((m, i) => (
                 <tr key={`${m.stage}-${i}`} className="border-t border-line">
                   <td className="py-1 pr-3">{m.stage}</td>
+                  <td className="py-1 pr-3">{m.agent ?? "code"}</td>
                   <td className="py-1 pr-3">{m.ms}</td>
-                  <td className="py-1 pr-3">{m.mode}</td>
                   <td className="py-1 pr-3">{m.model ?? "—"}{m.reasoning_effort ? ` · ${m.reasoning_effort}` : ""}</td>
                   <td className="py-1 pr-3">{m.prompt_version ? `v${m.prompt_version}` : "—"}</td>
                   <td className="py-1 pr-3">{m.input_tokens != null ? `${m.input_tokens}/${m.output_tokens}` : "—"}</td>
+                  <td className="py-1 pr-3">{m.tool_calls || m.handoffs ? `${m.tool_calls} · ${m.handoffs}` : "—"}</td>
                   <td className="py-1 pr-3">{m.retried ? "retried" : "—"}</td>
                 </tr>
               ))}
