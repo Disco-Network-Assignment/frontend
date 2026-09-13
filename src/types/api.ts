@@ -180,7 +180,6 @@ export type StageMeta = {
   prompt_version: string | null;
   input_tokens: number | null;
   output_tokens: number | null;
-  cached: boolean;
   retried: boolean;
 };
 

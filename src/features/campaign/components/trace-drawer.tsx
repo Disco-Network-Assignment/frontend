@@ -38,7 +38,7 @@ export function TraceDrawer({ plan }: { plan: CampaignPlan }) {
                   <td className="py-1 pr-3">{m.model ?? "—"}{m.reasoning_effort ? ` · ${m.reasoning_effort}` : ""}</td>
                   <td className="py-1 pr-3">{m.prompt_version ? `v${m.prompt_version}` : "—"}</td>
                   <td className="py-1 pr-3">{m.input_tokens != null ? `${m.input_tokens}/${m.output_tokens}` : "—"}</td>
-                  <td className="py-1 pr-3">{[m.cached && "cached", m.retried && "retried"].filter(Boolean).join(" ") || "—"}</td>
+                  <td className="py-1 pr-3">{m.retried ? "retried" : "—"}</td>
                 </tr>
               ))}
             </tbody>
