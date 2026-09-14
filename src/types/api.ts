@@ -121,7 +121,7 @@ export type CampaignConfig = {
   };
   publisher_allocation: PublisherAllocation[];
   bid_strategy: {
-    model: "CPM" | "CPC" | "CPA";
+    model: "CPM" | "CPA";
     starting_cpm_usd: number;
     target_cpa_usd: number | null;
     max_cpc_usd: number | null;
