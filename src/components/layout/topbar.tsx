@@ -1,18 +1,45 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Menu, PanelLeftOpen, Search } from "lucide-react";
 import { useSearch } from "@/components/layout/search-context";
 import { useHealth } from "@/features/campaign/hooks/use-examples";
 import { cn } from "@/lib/utils";
 
-/** Search (filters the publisher table), the backend status dot, and the workspace avatar. */
-export function Topbar() {
+type Props = {
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
+  onOpenDrawer: () => void;
+};
+
+/** Sidebar controls, search (filters the publisher table), the backend status, the avatar. */
+export function Topbar({ collapsed, onToggleCollapsed, onOpenDrawer }: Props) {
   const { query, setQuery } = useSearch();
   const health = useHealth();
   const ready = health.data?.llm_configured;
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-line bg-panel px-4 sm:px-6">
+      {/* small screens: open the drawer; desktop: re-expand a collapsed sidebar */}
+      <button
+        type="button"
+        onClick={onOpenDrawer}
+        aria-label="Open menu"
+        className="grid size-9 place-items-center rounded-lg text-soft hover:bg-panel2 hover:text-ink lg:hidden"
+      >
+        <Menu className="size-5" />
+      </button>
+      {collapsed && (
+        <button
+          type="button"
+          onClick={onToggleCollapsed}
+          aria-label="Expand sidebar"
+          title="Expand sidebar"
+          className="hidden size-9 place-items-center rounded-lg text-soft hover:bg-panel2 hover:text-ink lg:grid"
+        >
+          <PanelLeftOpen className="size-5" />
+        </button>
+      )}
+
       <label className="flex h-9 w-full max-w-md items-center gap-2 rounded-full border border-line bg-panel2 px-3 text-[12.5px] text-soft focus-within:border-brand-line focus-within:bg-panel">
         <Search className="size-4" />
         <input

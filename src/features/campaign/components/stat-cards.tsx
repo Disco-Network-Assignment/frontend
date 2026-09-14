@@ -2,6 +2,7 @@
 
 import { PenLine, Store, Users, Wallet } from "lucide-react";
 import { DeltaChip } from "@/features/campaign/components/dash-card";
+import { cn } from "@/lib/utils";
 import type { RunState } from "@/features/campaign/lib/run-reducer";
 
 const usd = (n: number) =>
@@ -91,12 +92,17 @@ export function StatCards({ state }: { state: RunState }) {
             <span className="text-[12.5px] font-medium text-soft">
               {stat.label}
             </span>
-            <span className="ml-auto grid size-7 place-items-center rounded-lg bg-brand-soft text-brand">
+            <span className="ml-auto grid size-7 place-items-center rounded-lg border border-brand-line bg-brand-soft text-brand">
               <stat.icon className="size-3.5" />
             </span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="h-display text-[26px] leading-none tabular-nums">
+            <span
+              className={cn(
+                "h-display text-[26px] leading-none tabular-nums",
+                stat.value === "—" && "font-normal text-line",
+              )}
+            >
               {stat.value}
             </span>
             {stat.chip && (

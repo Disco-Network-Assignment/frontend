@@ -6,10 +6,10 @@
 
 /* ---- dashboard palette (off-white ground, white cards, blue brand accent) ---- */
 @theme {
-  --color-bg: #f5f6f8;
+  --color-bg: #f3f4f7;
   --color-panel: #ffffff;
   --color-panel2: #f3f4f6;
-  --color-line: #e6e8ec;
+  --color-line: #dcdfe5;
   --color-ink: #111827;
   --color-soft: #6b7280;
   --color-brand: #2f6bff;
@@ -76,8 +76,8 @@
   --accent: #eaf0ff;
   --accent-foreground: #1d4ed8;
   --destructive: #dc2626;
-  --border: #e6e8ec;
-  --input: #e6e8ec;
+  --border: #dcdfe5;
+  --input: #dcdfe5;
   --ring: #2f6bff;
   --radius: 0.9rem;
 }
@@ -115,12 +115,12 @@
   letter-spacing: -0.01em;
 }
 
-/* dashboard card: white, soft border, the faintest lift */
+/* dashboard card: white, a clear 1px edge, a soft lift */
 .dash-card {
   background: var(--color-panel);
   border: 1px solid var(--color-line);
   border-radius: 16px;
-  box-shadow: 0 1px 2px #0f172a08;
+  box-shadow: 0 1px 2px #0f172a0a, 0 2px 8px #0f172a06;
 }
 
 /* thin scrollbars inside the sidebar and tables */
