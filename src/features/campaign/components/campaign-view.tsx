@@ -13,6 +13,7 @@ import { ErrorCard } from "@/features/campaign/components/error-card";
 import { PersonaPanel } from "@/features/campaign/components/persona-panel";
 import { PipelineStepper } from "@/features/campaign/components/pipeline-stepper";
 import { PublisherPanel } from "@/features/campaign/components/publisher-panel";
+import { RunHistory } from "@/features/campaign/components/run-history";
 import { StatCards } from "@/features/campaign/components/stat-cards";
 import { StoppedView } from "@/features/campaign/components/stopped-view";
 import { TraceDrawer } from "@/features/campaign/components/trace-drawer";
@@ -31,7 +32,7 @@ export function CampaignView() {
     force_exploratory: false,
   });
   const examples = useExamples();
-  const { state, start, cancel } = useCampaignRun();
+  const { state, start, cancel, load } = useCampaignRun();
 
   const running = state.status === "running";
   const submit = (text = description) => {
@@ -200,6 +201,14 @@ export function CampaignView() {
       )}
       {showConfig && <ConfigPanel config={state.config} />}
       {state.plan && <TraceDrawer plan={state.plan} />}
+
+      <RunHistory
+        currentRunId={state.plan?.run_id ?? state.stopped?.run_id}
+        onLoad={(record) => {
+          setDescription(record.description);
+          load(record);
+        }}
+      />
     </div>
   );
 }

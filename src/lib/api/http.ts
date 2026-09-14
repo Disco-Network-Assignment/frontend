@@ -10,7 +10,11 @@ export class ApiError extends Error {
   }
 }
 
-export async function request<T>(baseUrl: string, path: string, init?: RequestInit): Promise<T> {
+export async function request<T>(
+  baseUrl: string,
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
   const res = await fetch(baseUrl + path, {
     ...init,
     headers: { "content-type": "application/json", ...init?.headers },
@@ -37,7 +41,8 @@ export async function requestNdjson<T>(
     body: JSON.stringify(body),
     signal,
   });
-  if (!res.ok || !res.body) throw new ApiError(res.status, (await res.text()).slice(0, 300));
+  if (!res.ok || !res.body)
+    throw new ApiError(res.status, (await res.text()).slice(0, 300));
   const parser = new NdjsonParser<T>(onLine);
   const reader = res.body.getReader();
   const decoder = new TextDecoder();

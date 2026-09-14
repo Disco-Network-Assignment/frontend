@@ -5,7 +5,10 @@ import { campaignApi } from "@/lib/api/campaign";
 import { queryKeys } from "@/lib/api/query-keys";
 
 export function useExamples() {
-  return useQuery({ queryKey: queryKeys.examples, queryFn: () => campaignApi.examples() });
+  return useQuery({
+    queryKey: queryKeys.examples,
+    queryFn: () => campaignApi.examples(),
+  });
 }
 
 /** Whether the backend has an OpenAI key is shown in the header; polled slowly so a restart

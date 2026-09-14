@@ -1,19 +1,61 @@
 /** Wire types mirroring the backend's app/schemas.py (the API is the contract). */
 
-export type InputQuality = "clear" | "vague" | "ambiguous" | "off_catalog" | "insufficient";
+export type InputQuality =
+  "clear" | "vague" | "ambiguous" | "off_catalog" | "insufficient";
 export type Verdict = "recommend" | "consider" | "exclude";
 export type EventStatus = "started" | "progress" | "completed" | "failed";
-export type FailureKind = "validation" | "rate_limit" | "timeout" | "refusal" | "api" | "unknown";
+export type FailureKind =
+  "validation" | "rate_limit" | "timeout" | "refusal" | "api" | "unknown";
 export type ConfigStatus = "draft" | "not_recommended";
 
 /** The stages the pipeline reports on, in order; `done`/`stopped`/`error` are terminal markers. */
-export type PipelineStage = "intake" | "signals" | "match" | "personas" | "creative" | "config" | "summary";
+export type PipelineStage =
+  | "intake"
+  | "signals"
+  | "match"
+  | "personas"
+  | "creative"
+  | "config"
+  | "summary";
 export type StageKey = PipelineStage | "done" | "stopped" | "error";
 
 // ---- read-only ----
 
-export type ExampleAdvertiser = { id: string; number: number; description: string };
-export type HealthResponse = { status: "ok"; llm_configured: boolean; version: string };
+export type ExampleAdvertiser = {
+  id: string;
+  number: number;
+  description: string;
+};
+export type HealthResponse = {
+  status: "ok";
+  llm_configured: boolean;
+  version: string;
+};
+
+// ---- run history ----
+
+export type RunStatus = "done" | "stopped" | "failed";
+
+/** One row of GET /api/runs: enough to recognise a run without loading its plan. */
+export type RunSummary = {
+  run_id: string;
+  created_at: string;
+  session_id: string | null;
+  description: string;
+  status: RunStatus;
+  input_quality: InputQuality | null;
+  recommended: number;
+  personas: number;
+  creatives: number;
+  budget_usd: number;
+};
+
+/** GET /api/runs/{id}: exactly one of plan, stopped or error is set, matching `status`. */
+export type RunRecord = RunSummary & {
+  plan: CampaignPlan | null;
+  stopped: StopResult | null;
+  error: { stage: StageKey; kind: FailureKind; message: string } | null;
+};
 
 // ---- stage outputs ----
 
@@ -59,7 +101,12 @@ export type PublisherAssessment = {
   publisher_name: string;
   verdict: Verdict;
   score: number;
-  subscores: { audience_fit: number; category_fit: number; price_fit: number; context_fit: number };
+  subscores: {
+    audience_fit: number;
+    category_fit: number;
+    price_fit: number;
+    context_fit: number;
+  };
   reasons: string[];
   concerns: string[];
   exclusion_reason: string | null;
@@ -78,11 +125,22 @@ export type PersonaPick = {
   best_publishers: string[];
 };
 
-export type RejectedPersona = { persona_id: string; persona_name: string; why_not: string };
-export type PersonaSelection = { selected: PersonaPick[]; rejected: RejectedPersona[] };
+export type RejectedPersona = {
+  persona_id: string;
+  persona_name: string;
+  why_not: string;
+};
+export type PersonaSelection = {
+  selected: PersonaPick[];
+  rejected: RejectedPersona[];
+};
 
 export type LintIssue = { rule: string; message: string };
-export type LintReport = { passed: boolean; issues: LintIssue[]; self_checks: number };
+export type LintReport = {
+  passed: boolean;
+  issues: LintIssue[];
+  self_checks: number;
+};
 
 export type CreativeVariant = {
   id: string;
@@ -112,7 +170,11 @@ export type CampaignConfig = {
   objective: string;
   confidence: number;
   targeting: {
-    demographics: { age_range: string | null; gender_skew: string; income_tiers: string[] };
+    demographics: {
+      age_range: string | null;
+      gender_skew: string;
+      income_tiers: string[];
+    };
     interests: string[];
     contextual: string[];
     geo: string[];
@@ -127,11 +189,28 @@ export type CampaignConfig = {
     max_cpc_usd: number | null;
     rationale: string;
   };
-  budget: { total_usd: number; daily_cap_usd: number; flight_days: number; pacing: "even" };
-  creative_rotation: { mode: "even_then_optimize"; optimize_after_impressions: number };
+  budget: {
+    total_usd: number;
+    daily_cap_usd: number;
+    flight_days: number;
+    pacing: "even";
+  };
+  creative_rotation: {
+    mode: "even_then_optimize";
+    optimize_after_impressions: number;
+  };
   frequency_cap: { impressions: number; per_days: number };
-  kpis: { primary: string; secondary: string[]; targets: Record<string, number> };
-  forecast: { impressions: number; clicks: number; conversions: number; cpa_usd: number | null };
+  kpis: {
+    primary: string;
+    secondary: string[];
+    targets: Record<string, number>;
+  };
+  forecast: {
+    impressions: number;
+    clicks: number;
+    conversions: number;
+    cpa_usd: number | null;
+  };
   assumptions: string[];
   open_questions: string[];
 };
@@ -189,4 +268,3 @@ export type PipelineEvent = {
   completed?: number;
   total?: number;
 };
-

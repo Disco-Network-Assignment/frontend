@@ -13,6 +13,7 @@ import type {
   PipelineEvent,
   PipelineStage,
   PublisherAssessment,
+  RunRecord,
   StageKey,
   StopResult,
 } from "@/types/api";
@@ -53,10 +54,9 @@ export const PIPELINE_STAGES: PipelineStage[] = [
 ];
 
 const idleStages = (): Record<PipelineStage, StageState> =>
-  Object.fromEntries(PIPELINE_STAGES.map((s) => [s, { status: "idle" }])) as Record<
-    PipelineStage,
-    StageState
-  >;
+  Object.fromEntries(
+    PIPELINE_STAGES.map((s) => [s, { status: "idle" }]),
+  ) as Record<PipelineStage, StageState>;
 
 export const initialRunState: RunState = {
   status: "idle",
@@ -67,6 +67,7 @@ export const initialRunState: RunState = {
 
 export type RunAction =
   | { type: "start"; description: string }
+  | { type: "load"; record: RunRecord }
   | { type: "event"; event: PipelineEvent }
   | { type: "transport_error"; message: string }
   | { type: "cancel" }
@@ -79,13 +80,24 @@ function isPipelineStage(stage: StageKey): stage is PipelineStage {
 export function runReducer(state: RunState, action: RunAction): RunState {
   switch (action.type) {
     case "start":
-      return { ...initialRunState, stages: idleStages(), status: "running", description: action.description };
+      return {
+        ...initialRunState,
+        stages: idleStages(),
+        status: "running",
+        description: action.description,
+      };
     case "reset":
       return { ...initialRunState, stages: idleStages() };
+    case "load":
+      return loadRecord(action.record);
     case "cancel":
       return state.status === "running" ? { ...state, status: "idle" } : state;
     case "transport_error":
-      return { ...state, status: "error", error: { stage: "error", message: action.message } };
+      return {
+        ...state,
+        status: "error",
+        error: { stage: "error", message: action.message },
+      };
     case "event":
       return applyEvent(state, action.event);
   }
@@ -96,13 +108,20 @@ function applyEvent(state: RunState, event: PipelineEvent): RunState {
 
   if (status === "failed") {
     const stages = isPipelineStage(stage)
-      ? { ...state.stages, [stage]: { ...state.stages[stage], status: "failed" as const } }
+      ? {
+          ...state.stages,
+          [stage]: { ...state.stages[stage], status: "failed" as const },
+        }
       : state.stages;
     return {
       ...state,
       stages,
       status: "error",
-      error: { stage, message: event.message ?? "unknown error", kind: event.kind },
+      error: {
+        stage,
+        message: event.message ?? "unknown error",
+        kind: event.kind,
+      },
     };
   }
 
@@ -115,7 +134,10 @@ function applyEvent(state: RunState, event: PipelineEvent): RunState {
   if (!isPipelineStage(stage)) return state;
 
   if (status === "started") {
-    return { ...state, stages: { ...state.stages, [stage]: { status: "running" } } };
+    return {
+      ...state,
+      stages: { ...state.stages, [stage]: { status: "running" } },
+    };
   }
   if (status === "progress") {
     const creatives =
@@ -129,20 +151,30 @@ function applyEvent(state: RunState, event: PipelineEvent): RunState {
         ...state.stages,
         [stage]: {
           ...state.stages[stage],
-          progress: { completed: event.completed ?? 0, total: event.total ?? 0 },
+          progress: {
+            completed: event.completed ?? 0,
+            total: event.total ?? 0,
+          },
         },
       },
     };
   }
   // completed
-  const stages = { ...state.stages, [stage]: { ...state.stages[stage], status: "done" as const, ms: event.ms } };
+  const stages = {
+    ...state.stages,
+    [stage]: { ...state.stages[stage], status: "done" as const, ms: event.ms },
+  };
   switch (stage) {
     case "intake":
       return { ...state, stages, brief: event.data as AdvertiserBrief };
     case "signals":
       return { ...state, stages, signals: event.data as FitSignals[] };
     case "match":
-      return { ...state, stages, publishers: event.data as PublisherAssessment[] };
+      return {
+        ...state,
+        stages,
+        publishers: event.data as PublisherAssessment[],
+      };
     case "personas":
       return { ...state, stages, personas: event.data as PersonaSelection };
     case "creative":
@@ -154,9 +186,57 @@ function applyEvent(state: RunState, event: PipelineEvent): RunState {
   }
 }
 
+/** A stored run, restored as if its events had just been replayed. */
+export function loadRecord(record: RunRecord): RunState {
+  const base: RunState = {
+    ...initialRunState,
+    stages: idleStages(),
+    description: record.description,
+  };
+
+  if (record.status === "done" && record.plan) {
+    const plan = record.plan;
+    const stages = idleStages();
+    for (const meta of plan.trace) {
+      if (isPipelineStage(meta.stage))
+        stages[meta.stage] = { status: "done", ms: meta.ms };
+    }
+    // a plan without personas skipped those stages: leave them idle
+    return {
+      ...base,
+      status: "done",
+      stages,
+      brief: plan.brief,
+      publishers: plan.publishers,
+      personas: plan.personas,
+      creatives: plan.creatives,
+      config: plan.config,
+      summary: plan.summary,
+      plan,
+    };
+  }
+  if (record.status === "stopped" && record.stopped) {
+    const stages = idleStages();
+    stages.intake = { status: "done" };
+    return { ...base, status: "stopped", stages, stopped: record.stopped };
+  }
+  const error = record.error ?? {
+    stage: "error" as const,
+    kind: "unknown" as const,
+    message: "unknown failure",
+  };
+  return { ...base, status: "error", error };
+}
+
 /** Which step the stepper should highlight, and which are behind it. */
-export function stepState(state: RunState): { done: Set<PipelineStage>; active: PipelineStage | null } {
-  const done = new Set(PIPELINE_STAGES.filter((s) => state.stages[s].status === "done"));
-  const active = PIPELINE_STAGES.find((s) => state.stages[s].status === "running") ?? null;
+export function stepState(state: RunState): {
+  done: Set<PipelineStage>;
+  active: PipelineStage | null;
+} {
+  const done = new Set(
+    PIPELINE_STAGES.filter((s) => state.stages[s].status === "done"),
+  );
+  const active =
+    PIPELINE_STAGES.find((s) => state.stages[s].status === "running") ?? null;
   return { done, active };
 }

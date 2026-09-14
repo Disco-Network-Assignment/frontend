@@ -2,6 +2,7 @@
 
 import {
   FolderGit2,
+  History,
   KeyRound,
   LayoutDashboard,
   PanelLeftClose,
@@ -30,6 +31,7 @@ const SECTIONS: NavItem[] = [
   { id: "personas", label: "Personas", icon: Users },
   { id: "creatives", label: "Creatives", icon: PenLine },
   { id: "config", label: "Campaign config", icon: SlidersHorizontal },
+  { id: "history", label: "History", icon: History },
 ];
 
 type Props = {
