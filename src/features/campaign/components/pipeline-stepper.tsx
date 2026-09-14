@@ -1,10 +1,9 @@
 "use client";
 
-/** The pipeline as a vertical stepper: a checked circle for every stage already done, a
- *  half-filled circle for the one in flight, empty circles for what is still ahead. */
+/** The pipeline as a horizontal strip of steps: a filled check for every stage done, a pulsing
+ *  dot for the one in flight, an empty ring for what is still ahead. */
 
 import { Check, X } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { STEPS } from "@/features/campaign/lib/stages";
 import { stepState, type RunState } from "@/features/campaign/lib/run-reducer";
 import { cn } from "@/lib/utils";
@@ -16,8 +15,8 @@ function Marker({ state }: { state: MarkerState }) {
     return (
       <span
         className={cn(
-          "grid size-[18px] shrink-0 place-items-center rounded-full",
-          state === "failed" ? "bg-fail" : "bg-ink",
+          "grid size-5 shrink-0 place-items-center rounded-full",
+          state === "failed" ? "bg-fail" : "bg-brand",
         )}
       >
         {state === "failed" ? (
@@ -30,97 +29,92 @@ function Marker({ state }: { state: MarkerState }) {
   }
   if (state === "active") {
     return (
-      <span className="grid size-[18px] shrink-0 place-items-center rounded-full border-[1.5px] border-ink">
-        <span
-          className="size-[10px] animate-pulse rounded-full"
-          style={{ background: "linear-gradient(90deg, var(--color-ink) 50%, transparent 50%)" }}
-        />
+      <span className="grid size-5 shrink-0 place-items-center rounded-full border-[1.5px] border-brand">
+        <span className="size-2 animate-pulse rounded-full bg-brand" />
       </span>
     );
   }
-  return <span className="block size-[18px] shrink-0 rounded-full border-[1.5px] border-line bg-panel" />;
+  return (
+    <span className="block size-5 shrink-0 rounded-full border-[1.5px] border-line bg-panel" />
+  );
 }
 
 export function PipelineStepper({ state }: { state: RunState }) {
   const { done, active } = stepState(state);
 
   return (
-    <Card className="gap-0 py-4" data-testid="stepper">
-      <CardContent className="px-4">
-        <div className="flex items-center gap-2">
-          <div className="text-[15px] font-semibold">Pipeline</div>
-          <StatusPill status={state.status} />
-        </div>
-
-        <ol className="mt-4">
-          {STEPS.map((step, i) => {
-            const stage = state.stages[step.key];
-            const marker: MarkerState =
-              stage.status === "failed"
-                ? "failed"
-                : active === step.key
-                  ? "active"
-                  : done.has(step.key)
-                    ? "done"
-                    : "pending";
-            const last = i === STEPS.length - 1;
-            return (
-              <li key={step.key} className={cn("relative pl-8", !last && "pb-4")} data-stage={step.key} data-state={marker}>
-                {!last && (
-                  <span
-                    aria-hidden
-                    className={cn(
-                      "absolute top-[22px] bottom-0 left-[8.5px] w-px",
-                      marker === "done" ? "bg-ink" : "bg-line",
-                    )}
-                  />
-                )}
-                <span className="absolute top-px left-0">
-                  <Marker state={marker} />
-                </span>
-                <div className="flex items-baseline gap-2">
-                  <span
-                    className={cn(
-                      "text-[13.5px] font-medium",
-                      marker === "pending" && "text-soft",
-                      marker === "failed" && "text-fail",
-                    )}
-                  >
-                    {step.title}
-                  </span>
-                  <span className="font-mono text-[11px] text-soft">
-                    {step.kind === "code" ? "code" : "model"}
-                  </span>
-                  {stage.progress && marker === "active" && (
-                    <span className="font-mono text-[11px] text-soft">
-                      {stage.progress.completed}/{stage.progress.total}
-                    </span>
+    <div className="dash-card px-4 py-3" data-testid="stepper">
+      <div className="flex items-center gap-2">
+        <span className="text-[13.5px] font-semibold">Pipeline</span>
+        <StatusPill status={state.status} />
+      </div>
+      <ol className="thin-scroll mt-3 flex gap-2 overflow-x-auto pb-1">
+        {STEPS.map((step, i) => {
+          const stage = state.stages[step.key];
+          const marker: MarkerState =
+            stage.status === "failed"
+              ? "failed"
+              : active === step.key
+                ? "active"
+                : done.has(step.key)
+                  ? "done"
+                  : "pending";
+          const last = i === STEPS.length - 1;
+          return (
+            <li
+              key={step.key}
+              className="flex min-w-[150px] flex-1 items-start gap-2"
+              data-stage={step.key}
+              data-state={marker}
+              title={step.desc}
+            >
+              <Marker state={marker} />
+              <div className="min-w-0">
+                <div
+                  className={cn(
+                    "truncate text-[12.5px] font-medium",
+                    marker === "pending" && "text-soft",
+                    marker === "failed" && "text-fail",
                   )}
-                  {stage.ms !== undefined && marker === "done" && (
-                    <span className="ml-auto font-mono text-[11px] text-soft">
-                      {stage.ms < 1000 ? `${stage.ms} ms` : `${(stage.ms / 1000).toFixed(1)} s`}
-                    </span>
-                  )}
+                >
+                  {step.title}
                 </div>
-                {marker === "active" && <p className="mt-0.5 text-[12px] text-soft">{step.desc}</p>}
-              </li>
-            );
-          })}
-        </ol>
-      </CardContent>
-    </Card>
+                <div className="font-mono text-[10.5px] text-soft">
+                  {step.kind === "code" ? "code" : "agent"}
+                  {stage.progress &&
+                    marker === "active" &&
+                    ` · ${stage.progress.completed}/${stage.progress.total}`}
+                  {stage.ms !== undefined &&
+                    marker === "done" &&
+                    ` · ${stage.ms < 1000 ? `${stage.ms} ms` : `${(stage.ms / 1000).toFixed(1)} s`}`}
+                </div>
+              </div>
+              {!last && (
+                <span
+                  aria-hidden
+                  className={cn(
+                    "mt-2.5 h-px flex-1",
+                    marker === "done" ? "bg-brand" : "bg-line",
+                  )}
+                />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
 
 const PILL: Record<RunState["status"], { label: string; dot: string }> = {
   idle: { label: "Idle", dot: "bg-line" },
-  running: { label: "Running", dot: "bg-info" },
-  done: { label: "Done", dot: "bg-green-600" },
+  running: { label: "Running", dot: "bg-brand" },
+  done: { label: "Done", dot: "bg-pass" },
   stopped: { label: "Needs input", dot: "bg-amber-500" },
   error: { label: "Failed", dot: "bg-fail" },
 };
 
-function StatusPill({ status }: { status: RunState["status"] }) {
+export function StatusPill({ status }: { status: RunState["status"] }) {
   const pill = PILL[status];
   return (
     <span

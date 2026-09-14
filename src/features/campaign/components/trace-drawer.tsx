@@ -6,14 +6,18 @@ import type { CampaignPlan } from "@/types/api";
 /** Per-stage timings, models, prompt versions and tokens, then the raw plan: the audit trail. */
 export function TraceDrawer({ plan }: { plan: CampaignPlan }) {
   const tokens = plan.trace.reduce(
-    (acc, m) => ({ input: acc.input + (m.input_tokens ?? 0), output: acc.output + (m.output_tokens ?? 0) }),
+    (acc, m) => ({
+      input: acc.input + (m.input_tokens ?? 0),
+      output: acc.output + (m.output_tokens ?? 0),
+    }),
     { input: 0, output: 0 },
   );
   return (
-    <details className="rounded-xl border border-line bg-panel" data-testid="trace">
+    <details className="dash-card" data-testid="trace" id="trace">
       <summary className="cursor-pointer px-4 py-3 text-[13.5px] font-medium">
         Trace · run {plan.run_id} · {plan.trace.length} stage calls
-        {tokens.input > 0 && ` · ${tokens.input} in / ${tokens.output} out tokens`}
+        {tokens.input > 0 &&
+          ` · ${tokens.input} in / ${tokens.output} out tokens`}
       </summary>
       <div className="px-4 pb-4">
         <div className="overflow-x-auto">
@@ -36,10 +40,23 @@ export function TraceDrawer({ plan }: { plan: CampaignPlan }) {
                   <td className="py-1 pr-3">{m.stage}</td>
                   <td className="py-1 pr-3">{m.agent ?? "code"}</td>
                   <td className="py-1 pr-3">{m.ms}</td>
-                  <td className="py-1 pr-3">{m.model ?? "—"}{m.reasoning_effort ? ` · ${m.reasoning_effort}` : ""}</td>
-                  <td className="py-1 pr-3">{m.prompt_version ? `v${m.prompt_version}` : "—"}</td>
-                  <td className="py-1 pr-3">{m.input_tokens != null ? `${m.input_tokens}/${m.output_tokens}` : "—"}</td>
-                  <td className="py-1 pr-3">{m.tool_calls || m.handoffs ? `${m.tool_calls} · ${m.handoffs}` : "—"}</td>
+                  <td className="py-1 pr-3">
+                    {m.model ?? "—"}
+                    {m.reasoning_effort ? ` · ${m.reasoning_effort}` : ""}
+                  </td>
+                  <td className="py-1 pr-3">
+                    {m.prompt_version ? `v${m.prompt_version}` : "—"}
+                  </td>
+                  <td className="py-1 pr-3">
+                    {m.input_tokens != null
+                      ? `${m.input_tokens}/${m.output_tokens}`
+                      : "—"}
+                  </td>
+                  <td className="py-1 pr-3">
+                    {m.tool_calls || m.handoffs
+                      ? `${m.tool_calls} · ${m.handoffs}`
+                      : "—"}
+                  </td>
                   <td className="py-1 pr-3">{m.retried ? "retried" : "—"}</td>
                 </tr>
               ))}
@@ -47,7 +64,10 @@ export function TraceDrawer({ plan }: { plan: CampaignPlan }) {
           </table>
         </div>
         <div className="mt-3">
-          <JsonView value={plan} filename={`campaign-plan-${plan.run_id}.json`} />
+          <JsonView
+            value={plan}
+            filename={`campaign-plan-${plan.run_id}.json`}
+          />
         </div>
       </div>
     </details>

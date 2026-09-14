@@ -17,7 +17,9 @@ export function JsonView({ value, filename }: Props) {
     window.setTimeout(() => setCopied(false), 1500);
   };
   const download = () => {
-    const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    const url = URL.createObjectURL(
+      new Blob([text], { type: "application/json" }),
+    );
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
@@ -29,7 +31,8 @@ export function JsonView({ value, filename }: Props) {
     <div>
       <div className="flex gap-2">
         <Button variant="outline" size="xs" onClick={copy}>
-          {copied ? <Check className="size-3" /> : <Copy className="size-3" />} {copied ? "Copied" : "Copy"}
+          {copied ? <Check className="size-3" /> : <Copy className="size-3" />}{" "}
+          {copied ? "Copied" : "Copy"}
         </Button>
         <Button variant="outline" size="xs" onClick={download}>
           <Download className="size-3" /> Download

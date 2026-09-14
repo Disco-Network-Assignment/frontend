@@ -4,7 +4,10 @@ import { AlertTriangle, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { AdvertiserBrief } from "@/types/api";
 
-type Props = { brief: AdvertiserBrief; onInterpretation: (patch: string) => void };
+type Props = {
+  brief: AdvertiserBrief;
+  onInterpretation: (patch: string) => void;
+};
 
 /** What the intake stage understood, and (for anything but clear input) the assumptions it
  *  made, the questions it would ask, and interpretation chips that re-run the pipeline. */
@@ -20,11 +23,23 @@ export function ClarifyBanner({ brief, onInterpretation }: Props) {
       }
     >
       <div className="flex flex-wrap items-center gap-2">
-        {clear ? <Info className="size-4 text-soft" /> : <AlertTriangle className="size-4 text-warn" />}
-        <span className="text-[13.5px] font-medium">{brief.business_summary}</span>
-        <Badge variant="outline" className="font-mono">{brief.input_quality}</Badge>
-        <Badge variant="outline">{brief.product_category.replaceAll("_", " ")}</Badge>
-        <Badge variant="outline">{brief.price_tier} · {brief.purchase_model.replaceAll("_", " ")}</Badge>
+        {clear ? (
+          <Info className="size-4 text-soft" />
+        ) : (
+          <AlertTriangle className="size-4 text-warn" />
+        )}
+        <span className="text-[13.5px] font-medium">
+          {brief.business_summary}
+        </span>
+        <Badge variant="outline" className="font-mono">
+          {brief.input_quality}
+        </Badge>
+        <Badge variant="outline">
+          {brief.product_category.replaceAll("_", " ")}
+        </Badge>
+        <Badge variant="outline">
+          {brief.price_tier} · {brief.purchase_model.replaceAll("_", " ")}
+        </Badge>
         <span className="ml-auto font-mono text-[11px] text-soft">
           confidence {brief.confidence.toFixed(2)}
         </span>
@@ -32,7 +47,8 @@ export function ClarifyBanner({ brief, onInterpretation }: Props) {
 
       {brief.audience_signals.length > 0 && (
         <p className="mt-2 text-[12px] text-soft">
-          Audience signals: {brief.audience_signals.map((s) => `“${s}”`).join(" · ")}
+          Audience signals:{" "}
+          {brief.audience_signals.map((s) => `“${s}”`).join(" · ")}
         </p>
       )}
 
@@ -40,7 +56,9 @@ export function ClarifyBanner({ brief, onInterpretation }: Props) {
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           {brief.assumptions.length > 0 && (
             <div>
-              <div className="text-[11px] font-semibold tracking-wide text-soft uppercase">Assumed</div>
+              <div className="text-[11px] font-semibold tracking-wide text-soft uppercase">
+                Assumed
+              </div>
               <ul className="mt-1 list-disc space-y-0.5 pl-4 text-[12px]">
                 {brief.assumptions.map((a) => (
                   <li key={a}>{a}</li>
@@ -74,7 +92,7 @@ export function ClarifyBanner({ brief, onInterpretation }: Props) {
                 key={i.label}
                 type="button"
                 onClick={() => onInterpretation(i.brief_patch)}
-                className="rounded-full border border-lilac-line bg-panel px-2.5 py-1 text-[12px] hover:bg-lilac"
+                className="rounded-full border border-brand-line bg-panel px-2.5 py-1 text-[12px] hover:bg-brand-soft"
               >
                 {i.label}
               </button>

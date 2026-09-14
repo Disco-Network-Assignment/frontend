@@ -4,21 +4,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ---- neutral workspace palette (white / zinc / lilac accent) ---- */
+/* ---- dashboard palette (off-white ground, white cards, blue brand accent) ---- */
 @theme {
-  --color-bg: #f7f7f8;
+  --color-bg: #f5f6f8;
   --color-panel: #ffffff;
-  --color-panel2: #f4f4f5;
-  --color-line: #e4e4e7;
-  --color-ink: #18181b;
-  --color-soft: #71717a;
-  --color-violet: #7c3aed;
-  --color-lilac: #f1e7fb;
-  --color-lilac-line: #ddccf2;
-  --color-pass: #0f766e;
+  --color-panel2: #f3f4f6;
+  --color-line: #e6e8ec;
+  --color-ink: #111827;
+  --color-soft: #6b7280;
+  --color-brand: #2f6bff;
+  --color-brand-soft: #eaf0ff;
+  --color-brand-line: #c9d8ff;
+  --color-pass: #15803d;
+  --color-pass-soft: #ecfdf3;
   --color-warn: #b45309;
+  --color-warn-soft: #fff7ed;
   --color-fail: #dc2626;
-  --color-info: #2563eb;
+  --color-fail-soft: #fef2f2;
+  --color-info: #2f6bff;
   /* next/font injects the two families as CSS variables on <html> */
   --font-display: var(--font-inter), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
@@ -58,25 +61,25 @@
 
 /* single committed light theme: neutral ground, white boxed panels, black primary */
 :root {
-  --background: #f7f7f8;
-  --foreground: #18181b;
+  --background: #f5f6f8;
+  --foreground: #111827;
   --card: #ffffff;
-  --card-foreground: #18181b;
+  --card-foreground: #111827;
   --popover: #ffffff;
-  --popover-foreground: #18181b;
-  --primary: #18181b;
+  --popover-foreground: #111827;
+  --primary: #2f6bff;
   --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f1e7fb;
-  --accent-foreground: #5b21b6;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #111827;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #eaf0ff;
+  --accent-foreground: #1d4ed8;
   --destructive: #dc2626;
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #7c3aed;
-  --radius: 0.75rem;
+  --border: #e6e8ec;
+  --input: #e6e8ec;
+  --ring: #2f6bff;
+  --radius: 0.9rem;
 }
 
 @layer base {
@@ -111,6 +114,18 @@
   font-weight: 700;
   letter-spacing: -0.01em;
 }
+
+/* dashboard card: white, soft border, the faintest lift */
+.dash-card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px #0f172a08;
+}
+
+/* thin scrollbars inside the sidebar and tables */
+.thin-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.thin-scroll::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 999px; }
 
 /* the ad unit preview: a small white card the way a checkout page would show it */
 .ad-unit {
