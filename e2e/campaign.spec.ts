@@ -1,9 +1,16 @@
 import { expect, test } from "@playwright/test";
 
+/** These drive the real agents, so they need OPENAI_API_KEY in backend/.env; without it the
+ *  backend's /health says so and the suite is skipped rather than failed. */
 test.describe("campaign brain", () => {
+  test.beforeEach(async ({ request }) => {
+    const health = (await (await request.get("http://localhost:8000/health")).json()) as { llm_configured: boolean };
+    test.skip(!health.llm_configured, "backend has no OPENAI_API_KEY");
+  });
+
   test("a sample advertiser streams a full plan into the panels", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByTestId("mode-badge")).toContainText(/mode/);
+    await expect(page.getByTestId("mode-badge")).toContainText("agents ready");
 
     const chips = page.getByTestId("examples").getByRole("button");
     await expect(chips).toHaveCount(15);
@@ -11,7 +18,7 @@ test.describe("campaign brain", () => {
     await expect(page.getByTestId("description")).toHaveValue(/premium dog food/);
 
     await page.getByTestId("generate").click();
-    await expect(page.getByTestId("run-status")).toHaveAttribute("data-status", "done", { timeout: 30_000 });
+    await expect(page.getByTestId("run-status")).toHaveAttribute("data-status", "done", { timeout: 120_000 });
 
     await expect(page.getByTestId("brief")).toContainText("clear");
     const publishers = page.getByTestId("publishers");
@@ -39,7 +46,7 @@ test.describe("campaign brain", () => {
     await page.goto("/");
     await page.getByTestId("description").fill("idk just try it");
     await page.getByTestId("generate").click();
-    await expect(page.getByTestId("run-status")).toHaveAttribute("data-status", "stopped", { timeout: 15_000 });
+    await expect(page.getByTestId("run-status")).toHaveAttribute("data-status", "stopped", { timeout: 60_000 });
     await expect(page.getByTestId("stopped")).toContainText("Tell us a little more");
     await expect(page.getByTestId("publishers")).toHaveCount(0);
   });
@@ -48,7 +55,7 @@ test.describe("campaign brain", () => {
     await page.goto("/");
     await page.getByTestId("description").fill("B2B SaaS for dental practices. We automate their patient recall workflow.");
     await page.getByTestId("generate").click();
-    await expect(page.getByTestId("run-status")).toHaveAttribute("data-status", "done", { timeout: 30_000 });
+    await expect(page.getByTestId("run-status")).toHaveAttribute("data-status", "done", { timeout: 120_000 });
     await expect(page.getByTestId("publishers")).toContainText("No publisher in this catalog is a defensible fit");
     await expect(page.getByTestId("config")).toContainText("not recommended");
     await expect(page.getByTestId("creatives")).toHaveCount(0);

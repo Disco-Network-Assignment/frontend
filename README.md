@@ -40,13 +40,13 @@ npm run dev          # http://localhost:5173 (the backend's CORS allowlist knows
 ```
 
 `.env.development` already points at `http://localhost:8000`; copy `.env.example` to `.env` to
-target something else. Start the backend first (`uvicorn app.main:app` in `../backend`); it runs
-without an OpenAI key in heuristic mode, which is enough to click through everything.
+target something else. Start the backend first (`uvicorn app.main:app` in `../backend`) with an
+`OPENAI_API_KEY` in its `.env`; the header badge says whether the agents can run.
 
 ```bash
 npm run typecheck
 npm run lint
 npm test             # vitest: reducer + NDJSON parser
-npm run test:e2e     # playwright: starts backend (heuristic) + frontend, drives the installed Edge
+npm run test:e2e     # playwright: real backend + frontend in the installed Edge; skips without a key
 npm run build        # -> out/  (static export)
 ```

@@ -43,14 +43,12 @@ function Marker({ state }: { state: MarkerState }) {
 
 export function PipelineStepper({ state }: { state: RunState }) {
   const { done, active } = stepState(state);
-  const mode = state.plan?.mode ?? state.stopped?.mode;
 
   return (
     <Card className="gap-0 py-4" data-testid="stepper">
       <CardContent className="px-4">
         <div className="flex items-center gap-2">
           <div className="text-[15px] font-semibold">Pipeline</div>
-          {mode && <span className="font-mono text-[11px] text-soft">{mode}</span>}
           <StatusPill status={state.status} />
         </div>
 

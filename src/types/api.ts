@@ -2,7 +2,6 @@
 
 export type InputQuality = "clear" | "vague" | "ambiguous" | "off_catalog" | "insufficient";
 export type Verdict = "recommend" | "consider" | "exclude";
-export type ExecutionMode = "llm" | "heuristic";
 export type EventStatus = "started" | "progress" | "completed" | "failed";
 export type FailureKind = "validation" | "rate_limit" | "timeout" | "refusal" | "api" | "unknown";
 export type ConfigStatus = "draft" | "not_recommended";
@@ -15,7 +14,7 @@ export type StageKey = PipelineStage | "done" | "stopped" | "error";
 // ---- read-only ----
 
 export type ExampleAdvertiser = { id: string; number: number; description: string };
-export type HealthResponse = { status: "ok"; mode: ExecutionMode; version: string };
+export type HealthResponse = { status: "ok"; llm_configured: boolean; version: string };
 
 // ---- stage outputs ----
 
@@ -144,7 +143,7 @@ export type CampaignSummary = { strategy_summary: string; risks: string[] };
 export type StageMeta = {
   stage: StageKey;
   ms: number;
-  mode: ExecutionMode;
+  /** null when the stage is plain code */
   agent: string | null;
   model: string | null;
   reasoning_effort: string | null;
@@ -159,7 +158,6 @@ export type StageMeta = {
 export type CampaignPlan = {
   run_id: string;
   description: string;
-  mode: ExecutionMode;
   brief: AdvertiserBrief;
   publishers: PublisherAssessment[];
   personas: PersonaSelection | null;
@@ -172,7 +170,6 @@ export type CampaignPlan = {
 export type StopResult = {
   run_id: string;
   description: string;
-  mode: ExecutionMode;
   reason: string;
   clarifying_questions: string[];
   examples: string[];
@@ -181,7 +178,7 @@ export type StopResult = {
 
 // ---- API ----
 
-export type PlanOptions = { force_exploratory?: boolean; mode?: ExecutionMode; session_id?: string };
+export type PlanOptions = { force_exploratory?: boolean; session_id?: string };
 
 /** One NDJSON line from POST /api/plan. `data` is the stage output on `completed`. */
 export type PipelineEvent = {

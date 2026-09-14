@@ -12,7 +12,7 @@ export function TraceDrawer({ plan }: { plan: CampaignPlan }) {
   return (
     <details className="rounded-xl border border-line bg-panel" data-testid="trace">
       <summary className="cursor-pointer px-4 py-3 text-[13.5px] font-medium">
-        Trace · run {plan.run_id} · {plan.mode} · {plan.trace.length} stage calls
+        Trace · run {plan.run_id} · {plan.trace.length} stage calls
         {tokens.input > 0 && ` · ${tokens.input} in / ${tokens.output} out tokens`}
       </summary>
       <div className="px-4 pb-4">

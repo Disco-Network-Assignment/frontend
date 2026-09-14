@@ -42,11 +42,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Which executor the backend runs: model (needs a key) or the deterministic heuristic. */
+/** Whether the backend can run its agents: it needs an OpenAI key, and says so when missing. */
 function ModeBadge() {
   const health = useHealth();
-  const mode = health.data?.mode;
-  const label = health.isError ? "backend offline" : mode === "llm" ? "model mode" : mode ? "heuristic mode" : "…";
+  const ready = health.data?.llm_configured;
+  const label = health.isError ? "backend offline" : ready === true ? "agents ready" : ready === false ? "no API key" : "…";
   return (
     <span
       data-testid="mode-badge"
@@ -55,7 +55,7 @@ function ModeBadge() {
       <span
         className={cn(
           "size-1.5 rounded-full",
-          health.isError ? "bg-fail" : mode === "llm" ? "bg-violet" : "bg-amber-500",
+          health.isError ? "bg-fail" : ready ? "bg-violet" : "bg-amber-500",
         )}
       />
       {label}

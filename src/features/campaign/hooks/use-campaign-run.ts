@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { campaignApi } from "@/lib/api/campaign";
+import { ApiError } from "@/lib/api/http";
 import { initialRunState, runReducer, type RunState } from "@/features/campaign/lib/run-reducer";
 import type { PlanOptions } from "@/types/api";
 
@@ -36,8 +37,7 @@ export function useCampaignRun(): {
       }, current.signal)
       .catch((error: unknown) => {
         if (current.signal.aborted) return;
-        const message = error instanceof Error ? error.message : String(error);
-        dispatch({ type: "transport_error", message: `Could not reach the backend: ${message}` });
+        dispatch({ type: "transport_error", message: describe(error) });
       });
   }, []);
 
@@ -50,4 +50,17 @@ export function useCampaignRun(): {
   useEffect(() => () => controller.current?.abort(), []);
 
   return { state, start, cancel, reset };
+}
+
+/** A 503 carries the backend's own explanation (no API key); anything else is a transport failure. */
+function describe(error: unknown): string {
+  if (error instanceof ApiError && error.status === 503) {
+    try {
+      return String((JSON.parse(error.body) as { detail?: string }).detail ?? error.body);
+    } catch {
+      return error.body;
+    }
+  }
+  const message = error instanceof Error ? error.message : String(error);
+  return `Could not reach the backend: ${message}`;
 }
