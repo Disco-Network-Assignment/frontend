@@ -5,7 +5,6 @@ export type Verdict = "recommend" | "consider" | "exclude";
 export type EventStatus = "started" | "progress" | "completed" | "failed";
 export type FailureKind = "validation" | "rate_limit" | "timeout" | "refusal" | "api" | "unknown";
 export type ConfigStatus = "draft" | "not_recommended";
-export type LintSeverity = "hard" | "soft";
 
 /** The stages the pipeline reports on, in order; `done`/`stopped`/`error` are terminal markers. */
 export type PipelineStage = "intake" | "signals" | "match" | "personas" | "creative" | "config" | "summary";
@@ -52,7 +51,6 @@ export type FitSignals = {
   aov_ratio: number;
   aov_fit: number;
   reach_index: number;
-  notes_keyword_hits: string[];
   prior: number;
 };
 
@@ -83,7 +81,7 @@ export type PersonaPick = {
 export type RejectedPersona = { persona_id: string; persona_name: string; why_not: string };
 export type PersonaSelection = { selected: PersonaPick[]; rejected: RejectedPersona[] };
 
-export type LintIssue = { severity: LintSeverity; rule: string; message: string };
+export type LintIssue = { rule: string; message: string };
 export type LintReport = { passed: boolean; issues: LintIssue[]; self_checks: number };
 
 export type CreativeVariant = {

@@ -47,8 +47,6 @@ function CreativeCard({ creative: c }: { creative: CreativeVariant }) {
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1500);
   };
-  const hard = c.lint.issues.filter((i) => i.severity === "hard");
-  const soft = c.lint.issues.filter((i) => i.severity === "soft");
 
   return (
     <div className="rounded-xl border border-line p-3" data-testid="creative-card">
@@ -79,13 +77,10 @@ function CreativeCard({ creative: c }: { creative: CreativeVariant }) {
           <p className="mt-1 font-mono text-[11px] text-soft">runs on {c.target_publishers.join(", ")}</p>
         )}
       </details>
-      {(hard.length > 0 || soft.length > 0) && (
+      {c.lint.issues.length > 0 && (
         <ul className="mt-1.5 space-y-0.5 text-[11px]">
-          {hard.map((i) => (
+          {c.lint.issues.map((i) => (
             <li key={i.message} className="text-fail">{i.message}</li>
-          ))}
-          {soft.map((i) => (
-            <li key={i.message} className="text-warn">{i.message}</li>
           ))}
         </ul>
       )}

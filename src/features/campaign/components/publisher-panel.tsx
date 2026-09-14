@@ -73,9 +73,6 @@ function PublisherCard({ assessment: a }: { assessment: PublisherAssessment }) {
         <Chip>age overlap {Math.round(s.age_overlap_pct * 100)}%</Chip>
         <Chip>AOV {s.aov_ratio.toFixed(1)}×</Chip>
         <Chip>prior {Math.round(s.prior)}</Chip>
-        {s.notes_keyword_hits.map((h) => (
-          <Chip key={h} tone="lilac">notes: {h}</Chip>
-        ))}
       </div>
 
       <ul className="mt-2 list-disc space-y-0.5 pl-4 text-[13.5px]">
@@ -130,17 +127,8 @@ function Sub({ label, value }: { label: string; value: number }) {
   );
 }
 
-function Chip({ children, tone }: { children: React.ReactNode; tone?: "lilac" }) {
-  return (
-    <span
-      className={cn(
-        "rounded-full border px-2 py-0.5 text-[11px]",
-        tone === "lilac" ? "border-lilac-line bg-lilac" : "border-line",
-      )}
-    >
-      {children}
-    </span>
-  );
+function Chip({ children }: { children: React.ReactNode }) {
+  return <span className="rounded-full border border-line px-2 py-0.5 text-[11px]">{children}</span>;
 }
 
 export function PanelSkeleton({ title, rows }: { title: string; rows: number }) {
