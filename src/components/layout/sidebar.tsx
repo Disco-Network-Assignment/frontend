@@ -16,7 +16,7 @@ import { useState } from "react";
 import { useHealth } from "@/features/campaign/hooks/use-examples";
 import { cn } from "@/lib/utils";
 
-export const REPOS_URL = "https://github.com/AbhisekOmkar/disco-backend";
+export const REPOS_URL = "https://github.com/Disco-Network-Assignment/backend";
 
 type NavItem = {
   id: string;
